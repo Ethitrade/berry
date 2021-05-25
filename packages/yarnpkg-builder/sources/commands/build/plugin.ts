@@ -26,6 +26,8 @@ export default class BuildPluginCommand extends Command {
     [`build`, `plugin`],
   ];
 
+  externals: Array<string> = Option.Array(`--external`, [], {description: `An array of additional external modules that should be exluded from the built plugin`});
+
   static usage: Usage = Command.Usage({
     description: `build a local plugin`,
     details: `
@@ -107,7 +109,7 @@ export default class BuildPluginCommand extends Command {
 
           externals: [
             ({context, request}, callback: any) => {
-              if (request !== name && isDynamicLib(request)) {
+              if (request !== name && (isDynamicLib(request) || this.externals.includes(request))) {
                 callback(null, `commonjs ${request}`);
               } else {
                 callback();
